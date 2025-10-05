@@ -34,7 +34,7 @@ import ghidra.app.util.demangler.DemangledObject;
 import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 
-public class ReSync extends GhidraScript {
+public class ReSyncPull extends GhidraScript {
     private JsonArray getFunctionData(String folderPath) throws IOException, FileNotFoundException {
         Gson gson = new Gson();
 
@@ -48,7 +48,7 @@ public class ReSync extends GhidraScript {
     }
 
     private void loadRepository(String folderPath) {
-        String repo = "<ENTER URL HERE>";
+        String repo = "<ENTER REPO HERE>";
 
         File folder = new File(folderPath);
         folder.mkdirs();
@@ -121,8 +121,6 @@ public class ReSync extends GhidraScript {
             try {
                 DemangledObject demangled = DemanglerUtil.demangle(currentProgram, symbol);
 
-                listing.setComment(ghidraAddress, CodeUnit.PLATE_COMMENT, symbol);
-
                 if (demangled != null) {
                     String name = demangled.getName();
                     String signature = demangled.getSignature(false);
@@ -131,6 +129,7 @@ public class ReSync extends GhidraScript {
                     bookmarkManager.setBookmark(ghidraAddress, "Info", "Symbols", name);
                     function.setName(name, SourceType.USER_DEFINED);
                 } else {
+                    listing.setComment(ghidraAddress, CodeUnit.PLATE_COMMENT, symbol + "\n\nCould not demangle signature");
                     bookmarkManager.setBookmark(ghidraAddress, "Info", "Symbols", symbol);
                     function.setName(symbol, SourceType.USER_DEFINED);
                 }
